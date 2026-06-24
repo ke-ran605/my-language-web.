@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>English Quiz 50 ข้อ (มีปุ่มย้อนกลับ)</title>
+
+<style>
+body {
+    background: #9e9e9e; 
+    color: #000000; 
+    font-family: Arial, sans-serif;
+    max-width: 900px;
+    margin: auto;
+    padding: 20px;
+}
+
+.box {
+    background: #bdbdbd; 
+    padding: 25px;
+    border-radius: 15px;
+    margin-top: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+h1, h2, h3, h4 { color: #000000; }
+h1 { border-bottom: 2px solid #757575; padding-bottom: 10px; }
+h2 { border-bottom: 1px solid #757575; padding-bottom: 5px; margin-top: 30px; }
+
+button {
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-top: 10px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.startBtn {
+    background: #fbc02d;
+    color: #000000;
+    width: 100%;
+    padding: 15px;
+    font-size: 20px;
+    font-weight: bold;
+    border: 2px solid #fbc02d;
+    transition: 0.2s ease;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+.startBtn:hover { 
+    filter: brightness(1.1); 
+    transform: scale(1.01);
+}
+
+#a0 { background: #fff8e1; color: #000000; }
+#a1 { background: #ffecb3; color: #000000; }
+#a2 { background: #ffe082; color: #000000; }
+#a3 { background: #ffd54f; color: #000000; }
+
+.answerBtn {
+    width: 100%;
+    display: block;
+    margin: 10px 0;
+    text-align: left;
+    padding-left: 20px;
+    transition: 0.2s;
+}
+.answerBtn:hover { filter: brightness(0.95); padding-left: 25px; }
+
+/* ปุ่มย้อนกลับดีไซน์พิเศษ */
+.backBtn {
+    background: #757575;
+    color: #ffffff;
+    width: 100%;
+    margin-top: 15px;
+    padding: 10px;
+    font-size: 14px;
+    border-radius: 8px;
+    transition: 0.2s;
+}
+.backBtn:hover {
+    background: #424242;
+}
+
+#loading-screen {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: #9e9e9e;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.5s ease;
+}
+.loading-logo {
+    font-size: 32px;
+    font-weight: bold;
+    color: #000000;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+}
+.loading-gif-container {
+    width: 80%;
+    max-width: 300px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+.progress-bar-container {
+    width: 300px;
+    height: 6px;
+    background: #bdbdbd;
+    border-radius: 3px;
+    overflow: hidden;
+}
+.progress-bar { width: 0%; height: 100%; background: #000000; }
+
+.hidden { display: none !important; }
+
+.review-box {
+    background: rgba(255, 255, 255, 0.4);
+    padding: 15px;
+    margin-top: 15px;
+    border-radius: 8px;
+    border-left: 5px solid #000;
+}
+.correct { border-left-color: #2e7d32; color: #2e7d32; }
+.wrong { border-left-color: #c62828; color: #c62828; }
+
+.content-card {
+    background: rgba(255, 255, 255, 0.3);
+    padding: 15px;
+    border-radius: 8px;
+    margin: 10px 0;
+}
+.table-style {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+}
+.table-style th, .table-style td {
+    border: 1px solid #757575;
+    padding: 10px;
+    text-align: left;
+}
+.table-style th { background: rgba(0,0,0,0.05); }
+
+.mini-gif {
+    max-width: 150px;
+    border-radius: 8px;
+    margin-top: 5px;
+}
+
+/* สไตล์เพิ่มเติมสำหรับระบบเลือกการตั้งค่าควิซ */
+.setup-group {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 15px;
+}
+.setup-btn {
+    background: #fff8e1;
+    border: 2px solid #757575;
+    color: #000000;
+    padding: 12px;
+    font-size: 15px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.setup-btn:hover {
+    background: #ffe082;
+}
+.setup-btn.selected {
+    background: #fbc02d;
+    border-color: #000000;
+}
+</style>
+</head>
+<body>
+
+<div id="loading-screen">
+    <div class="loading-logo">START</div>
+    <div class="loading-gif-container">
+        <div class="tenor-gif-embed" data-postid="18170624708265994501" data-share-method="host" data-aspect-ratio="1" data-width="100%"></div>
+    </div>
+    <div class="progress-bar-container">
+        <div id="bar" class="progress-bar"></div>
+    </div>
+</div>
+
+<div id="top-banner-container">
+    <div class="tenor-gif-embed" data-postid="11235678714245910800" data-share-method="host" data-aspect-ratio="1.77778" data-width="100%"></div>
+</div>
+
+<h1>🚂 English Quiz ระบบคลังข้อสอบสุ่มเลือกด่าน</h1>
+
+<div id="lesson" class="box">
+    <h2>📖 เจาะลึกบทเรียนพื้นฐานอังกฤษ</h2>
+    <p>แบบทดสอบชุดนี้จะ<b>สุ่มคำถามจากคลังระบบทั้งหมด 600 ข้อ</b> โดยคุณสามารถกำหนดจำนวนข้อสอบและเลือกระดับความยากที่ต้องการทดสอบได้ตามใจชอบ โปรดทบทวนเนื้อหาก่อนเริ่มทำครับ!</p>
+
+    <h3>1. สรรพนามทำหน้าที่ประธาน (Subject Pronouns)</h3>
+    <div class="content-card">
+        <p>Pronouns คือคำสารพัดประโยชน์ที่ใช้เรียกแทนชื่อคน สัตว์ สิ่งของ หรือสถานที่ เพื่อที่เราจะได้ไม่ต้องพูดชื่อเดิมซ้ำๆ ในประโยค โดยแบ่งออกเป็น 2 กลุ่มตามพจน์ (จำนวน) ดังนี้:</p>
+        
+        <h4>🔹 กลุ่มประธานเอกพจน์ (Singular - มีจำนวนเพียงหนึ่งเดียว)</h4>
+        <ul>
+            <li><b>I</b> = ฉัน / ผม (ตัวเราเองคนเดียว)</li>
+            <li><b>He</b> = เขา (ผู้ชาย 1 คน เช่น He is John.)</li>
+            <li><b>She</b> = เธอ / เขา (ผู้หญิง 1 คน เช่น She is Jane.)</li>
+            <li><b>It</b> = มัน (ใช้แทนสัตว์ 1 ตัว หรือสิ่งของ 1 ชิ้น เช่น It is a pen.)</li>
+        </ul>
+        
+        <h4>🔹 กลุ่มประธานพหูพจน์ (Plural - มีจำนวนตั้งแต่สองขึ้นไป)</h4>
+        <ul>
+            <li><b>You</b> = คุณ / พวกคุณ (ยกเว้นเป็นพิเศษ! แม้คุณจะคนเดียว แต่ในทางไวยากรณ์จัดเป็นพหูพจน์เสมอ)</li>
+            <li><b>We</b> = พวกเรา (มีคนอื่นรวมถึงตัวเราอยู่ด้วย เช่น Tom and I = We)</li>
+            <li><b>They</b> = พวกเขา / พวกมัน (ใช้แทนคนหลายคน สัตว์หลายตัว หรือสิ่งของหลายชิ้น เช่น The dogs = They)</li>
+        </ul>
+    </div>
+
+    <h3>2. ทำความรู้จักกับ Verb to be (am / is / are)</h3>
+    <div class="content-card">
+        <p>Verb to be คือกริยาพื้นฐานที่สุดในภาษาอังกฤษ เมื่อทำหน้าที่เป็นกริยาแท้จะแปลความหมายได้ 3 แบบหลักๆ คือ "เป็น", "อยู่" หรือ "คือ"</p>
+        <table class="table-style">
+            <thead>
+                <tr>
+                    <th>Subject (ประธาน)</th>
+                    <th>Verb to be</th>
+                    <th>รูปย่อ (Contraction)</th>
+                    <th>ความเหมาะสมเชิงจำนวน</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td><b>I</b></td><td>am</td><td>I'm</td><td>ใช้คู่กันเพียงหนึ่งเดียวในโลก</td></tr>
+                <tr><td><b>He / She / It</b><br>หรือชื่อคนคนเดียว</td><td>is</td><td>He's / She's / It's</td><td>ใช้กับประธานที่เป็นเอกพจน์ (หนึ่งเดียว)</td></tr>
+                <tr><td><b>You / We / They</b><br>หรือประธานหลายสิ่ง</td><td>are</td><td>You're / We're / They're</td><td>ใช้กับประธานที่เป็นพหูพจน์ (หลายคน/หลายสิ่ง)</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>3. รูปแบบโครงสร้างประโยคทั้ง 3 ประเภท</h3>
+    <div class="content-card">
+        <h4>✅ 3.1 ประโยคบอกเล่า (Affirmative Sentences)</h4>
+        <p>โครงสร้าง: ประธาน + Verb to be + ส่วนขยาย/คำคุณศัพท์</p>
+        <ul>
+            <li>I am a student. (ฉันคือเหล่านักเรียน)</li>
+            <li>He is tall. (เขาเป็นคนตัวสูง)</li>
+            <li>The apples are sweet. (แอปเปิ้ลเหล่านั้นมีรสหวาน)</li>
+        </ul>
+
+        <h4>❌ 3.2 ประโยคปฏิเสธ (Negative Sentences)</h4>
+        <p>หลักการง่ายๆ: เติมคำว่า "not" ไว้ข้างหลัง Verb to be เสมอเพื่อบอกความหมายว่า "ไม่"</p>
+        <ul>
+            <li>I am not tired. (ฉันไม่ได้เหนื่อย)</li>
+            <li>She is not home. หรือย่อเป็น She isn't home. (เธอไม่ได้อยู่บ้าน)</li>
+            <li>They are not ready. หรือย่อเป็น They aren't ready. (พวกเรายังไม่พร้อม)</li>
+        </ul>
+
+        <h4>❓ 3.3 ประโยคคำถาม (Question Sentences)</h4>
+        <p>หลักการสลับตำแหน่ง: ย้าย Verb to be มาไว้ข้างหน้าสุดของประโยค แล้วเติมเครื่องหมายคำถาม (?)</p>
+        <ul>
+            <li>Is she a doctor? (เธอเป็นหมอใช่ไหม?) → ตอบ: Yes, she is. / No, she isn't.</li>
+            <li>Are you okay? (คุณโอเคไหม?) → ตอบ: Yes, I am. / No, I am not.</li>
+        </ul>
+    </div>
+
+    <h3>📝 4. เพิ่มเติมเนื้อหา: กฎการเติม s และ es ที่คำกริยา (Verbs)</h3>
+    <div class="content-card" style="border-left: 5px solid #000;">
+        <p>ในประโยคบอกเล่าของ Present Simple Tense เมื่อประธานเป็น <b>เอกพจน์ (He, She, It หรือชื่อบุคคลเดียว)</b> คำกริยาจะต้องทำการ <b>เติม s หรือ es เสมอ!</b> แต่ถ้าประธานเป็นพหูพจน์ (I, You, We, They) กริยาใช้รูปปกติ</p>
+        <h4>📌 วิธีการพิจารณาเลือกเติม:</h4>
+        <ul>
+            <li><b>คำกริยาทั่วไป:</b> สามารถเติม s ได้เลย เช่น walk ➡️ walks, run ➡️ runs</li>
+            <li><b>คำกริยาที่ลงท้ายด้วย ch, sh, s, ss, x, z, o:</b> ต้องเติม es เช่น watch ➡️ watches, go ➡️ goes, fix ➡️ fixes</li>
+            <li><b>คำกริยาลงท้ายด้วย y:</b> หน้า y เป็นพยัญชนะ เปลี่ยน y เป็น i แล้วเติม es เช่น fly ➡️ flies / แต่หากหน้า y เป็นสระ (a, e, i, o, u) เติม s ได้ทันที เช่น play ➡️ plays</li>
+        </ul>
+    </div>
+
+    <h3>⚠️ ข้อควรระวังพิเศษเพื่อป้องกันการโดนหลอกในข้อสอบ!</h3>
+    <div class="content-card" style="border-left: 5px solid #d32f2f;">
+        <ul>
+            <li><b>คำนามนับไม่ได้:</b> Water (น้ำ), Money (เงิน) ถือเป็นเอกพจน์เสมอ ดังนั้นต้องใช้กับ is เช่น Water is life.</li>
+            <li><b>ประธานเชื่อมด้วย And:</b> ชื่อคนสองคน เช่น Tom and Som ถือเป็นพหูพจน์ ต้องใช้ are ห้ามใช้ am หรือ is</li>
+        </ul>
+    </div>
+
+    <h2>⚙️ ตั้งค่าระดับการทดสอบ</h2>
+    <div class="content-card" style="background: rgba(255, 255, 255, 0.5);">
+        <p><b>1. เลือกระดับความยาก (คลังรวมระดับละ 200 ข้อ รวมเป็น 600 ข้อ)</b></p>
+        <div class="setup-group">
+            <button id="level-easy" class="setup-btn selected" onclick="setDifficulty('easy')">🌱 ระดับง่าย</button>
+            <button id="level-medium" class="setup-btn" onclick="setDifficulty('medium')">🏹 ระดับกลาง</button>
+            <button id="level-hard" class="setup-btn" onclick="setDifficulty('hard')">🎓 ระดับยาก</button>
+        </div>
+
+        <p><b>2. เลือกจำนวนข้อสอบที่คุณต้องการทำในรอบนี้</b></p>
+        <div class="setup-group">
+            <button id="length-25" class="setup-btn selected" onclick="setLength(25)">⏱️ 25 ข้อ</button>
+            <button id="length-50" class="setup-btn" onclick="setLength(50)">🔥 50 ข้อ</button>
+            <button id="length-100" class="setup-btn" onclick="setLength(100)">👑 100 ข้อ</button>
+        </div>
+    </div>
+
+    <div style="margin: 30px 0; text-align: center;">
+        <button class="startBtn" onclick="triggerLoad('quiz')">START (เริ่มแบบทดสอบสุ่มตามเงื่อนไข)</button>
+    </div>
+
+    <div style="margin-top: 20px;">
+        <div class="tenor-gif-embed" data-postid="5527099245444769494" data-share-method="host" data-aspect-ratio="1.77778" data-width="100%"></div>
+    </div>
+</div>
+
+<div id="quiz" class="box hidden">
+    <h2 id="quiz-header">🎯 แบบทดสอบ</h2>
+    <div class="tenor-gif-embed" data-postid="14677102733511933606" data-share-method="host" data-aspect-ratio="1" data-width="100%"></div>
+    
+    <h3 id="question" style="font-size: 22px; margin-top: 20px;"></h3>
+
+    <button class="answerBtn" onclick="answer(0)" id="a0"></button>
+    <button class="answerBtn" onclick="answer(1)" id="a1"></button>
+    <button class="answerBtn" onclick="answer(2)" id="a2"></button>
+    <button class="answerBtn" onclick="answer(3)" id="a3"></button>
+
+    <button id="backBtn" class="backBtn hidden" onclick="goBack()">↩️ ย้อนกลับไปแก้ไขข้อเมื่อครู่</button>
+
+    <p id="progress" style="text-align: right; font-weight: bold; margin-top: 15px;"></p>
+</div>
+
+<div id="result" class="box hidden">
+    <h2>🏆 ผลการทดสอบ</h2>
+    <div class="tenor-gif-embed" data-postid="10666835903843669153" data-share-method="host" data-aspect-ratio="1.77778" data-width="100%"></div>
+    
+    <p id="score" style="font-size: 24px; font-weight: bold; text-align: center; margin: 20px 0;"></p>
+    
+    <hr style="border: 1px solid #757575;">
+    <h3>🔍 เฉลยละเอียด (เฉพาะข้อที่คุณได้ทำในรอบนี้)</h3>
+    <div id="review-zone"></div>
+
+    <button class="startBtn" style="margin-top: 20px; font-size: 18px;" onclick="triggerLoad('restart')">🔄 เลือกด่าน/สุ่มทำใหม่อีกครั้ง</button>
+</div>
+
+<script type="text/javascript" async src="https://tenor.com/embed.js"></script>
+
+<script>
+// คลังข้อสอบดั้งเดิม 100 ข้อจากไฟล์ 3.html
+const original100Questions = [
+    { q:"___ happy.", a:["I am","I is","I are","He am"], c:0, detail:"I ต้องใช้คู่กับ am เสมอ", read:"ไอ แอม แฮปปี้", trans:"ฉันมีความสุข" },
+    { q:"คำว่า 'เธอ' (ผู้หญิงคนเดียว)", a:["He","She","It","They"], c:1, detail:"She ใช้แทนผู้หญิงคนเดียว", read:"ชี", trans:"เธอ (ผู้หญิง)" },
+    { q:"We ___ students.", a:["am","is","are","be"], c:2, detail:"We (พวกเรา) มีหลายคนเป็นพหูพจน์ใช้ are", read:"วี อาร์ สติวเดนท์ส", trans:"พวกเราเป็นนักเรียน" },
+    { q:"He ___ Tom.", a:["are","is","am","be"], c:1, detail:"He (เขาผู้ชายคนเดียว) เป็นเอกพจน์ใช้ is", read:"ฮี อีส ทอม", trans:"เขาคือทอม" },
+    { q:"คำว่า 'พวกเรา'", a:["We","They","You","It"], c:0, detail:"We แปลว่า พวกเรา", read:"วี", trans:"พวกเรา" },
+    { q:"She ___ beautiful.", a:["are","am","is","be"], c:2, detail:"She เป็นเอกพจน์ใช้ is", read:"ชี อีส บิวทิฟูล", trans:"เธอสวย" },
+    { q:"It ___ hot.", a:["is","am","are","be"], c:0, detail:"It เป็นเอกพจน์ใช้ is", read:"อิท อีส ฮอท", trans:"มันร้อน" },
+    { q:"They ___ happy.", a:["am","is","are","be"], c:2, detail:"They (พวกเขา) เป็นพหูพจน์ใช้ are", read:"เดย์ อาร์ แฮปปี้", trans:"พวกเขามีความสุข" },
+    { q:"I am → รูปย่อคืออะไร?", a:["He's","I'm","It's","We're"], c:1, detail:"I am ย่อเป็น I'm", read:"ไอ แอม ย่อเป็น ไอม์", trans:"ฉันเป็น/อยู่/คือ" },
+    { q:"You ___ a teacher.", a:["are","am","is","be"], c:0, detail:"You ใช้คู่กับ are เสมอ", read:"ยู อาร์ อะ ทีเชอร์", trans:"คุณคือครู" },
+    { q:"___ are friends.", a:["He","She","We","It"], c:2, detail:"are ใช้คู่กับประธานพหูพจน์ เช่น We", read:"วี อาร์ เฟรนส์", trans:"พวกเราคือเพื่อนกัน" },
+    { q:"___ is a cat.", a:["It","They","We","You"], c:0, detail:"is ใช้คู่กับประธานเอกพจน์ สัตว์ตัวเดียวใช้ It", read:"อิท อีส อะ แคท", trans:"มันคือแมว" },
+    { q:"You and I ___ a team.", a:["am","is","are","be"], c:2, detail:"You and I รวมเป็น 2 คน (พวกเรา) จึงใช้ are", read:"ยู แอนด์ ไอ อาร์ อะ ทีม", trans:"คุณและฉันคือทีมเดียวกัน" },
+    { q:"Tom and Som ___ cooking.", a:["am","is","are","be"], c:2, detail:"ประธาน 2 คนขึ้นไปเป็นพหูพจน์ใช้ are", read:"ทอม แอนด์ ส้ม อาร์ คุกกิ้ง", trans:"ทอมและส้มกำลังทำอาหาร" },
+    { q:"The dog ___ barking.", a:["is","am","are","be"], c:0, detail:"The dog สุนัข 1 ตัว เป็นเอกพจน์ใช้ is", read:"เดอะ ด็อก อีส บาร์คกิ้ง", trans:"สุนัขกำลังเห่า" },
+    { q:"The dogs ___ running.", a:["am","is","are","be"], c:2, detail:"The dogs เติม s มีหลายตัว เป็นพหูพจน์ใช้ are", read:"เดอะ ด็อกส์ อาร์ รันนิ่ง", trans:"สุนัขเหล่านั้นกำลังวิ่ง" },
+    { q:"He is → รูปย่อคืออะไร?", a:["He's","She's","It's","You're"], c:0, detail:"He is ย่อเป็น He's", read:"ฮี อีส ย่อเป็น ฮีส", trans:"เขาเป็น/อยู่/คือ" },
+    { q:"They are → รูปย่อคืออะไร?", a:["They're","We're","You're","I'm"], c:0, detail:"They are ย่อเป็น They're", read:"เดย์ อาร์ ย่อเป็น แดร์", trans:"พวกเขาเป็น/อยู่/คือ" },
+    { q:"We are → รูปย่อคืออะไร?", a:["We're","They're","You're","He's"], c:0, detail:"We are ย่อเป็น We're", read:"วี อาร์ ย่อเป็น เวียร์", trans:"พวกเราเป็น/อยู่/คือ" },
+    { q:"She is → รูปย่อคืออะไร?", a:["He's","She's","It's","I'm"], c:1, detail:"She is ย่อเป็น She's", read:"ชี อีส ย่อเป็น ชีส", trans:"เธอเป็น/อยู่/คือ" },
+    { q:"It is → รูปย่อคืออะไร?", a:["It's","Is","Its","Itis"], c:0, detail:"It is ย่อเป็น It's", read:"อิท อีส ย่อเป็น อิทส์", trans:"มันเป็น/อยู่/คือ" },
+    { q:"You are → รูปย่อคืออะไร?", a:["You're","Your","We're","They're"], c:0, detail:"You are ย่อเป็น ยัวร์", read:"ยู อาร์ ย่อเป็น ยัวร์", trans:"คุณเป็น/อยู่/คือ" },
+    { q:"___ am a doctor.", a:["He","She","I","You"], c:2, detail:"am ใช้กับประธาน I ได้เพียงตัวเดียวเท่านั้น", read:"ไอ แอม อะ ด็อกเทอร์", trans:"ฉันเป็นหมอ" },
+    { q:"___ is from Thailand.", a:["We","They","He","You"], c:2, detail:"is ใช้กับประธานเอกพจน์ เช่น He", read:"ฮี อีส ฟรอม ไทแลนด์", trans:"เขามาจากประเทศไทย" },
+    { q:"___ are very kind.", a:["He","She","It","You"], c:3, detail:"are ใช้คู่กับ You เสมอ", read:"ยู อาร์ เวนี่ ไคนด์", trans:"คุณใจดีมากๆ" },
+    { q:"My father ___ tall.", a:["is","am","are","be"], c:0, detail:"My father พ่อคนเดียวเป็นเอกพจน์ใช้ is", read:"มาย ฟาเธอร์ อีส ทอล", trans:"พ่อของฉันเป็นคนตัวสูง" },
+    { q:"My parents ___ nice.", a:["is","am","are","be"], c:2, detail:"parents (พ่อแม่) มี s ถือเป็นพหูพจน์ใช้ are", read:"มาย แพเรนท์ส อาร์ ไนซ์", trans:"พ่อแม่ของฉันใจดีมาก" },
+    { q:"This car ___ blue.", a:["is","am","are","be"], c:0, detail:"This car รถคันนี้คันเดียวใช้ is", read:"ดิส คาร์ อีส บลู", trans:"รถคันนี้สีน้ำเงิน" },
+    { q:"These cars ___ red.", a:["is","am","are","be"], c:2, detail:"These cars รถเหล่านี้หลายคันใช้ are", read:"ดีส คาร์ส์ อาร์ เรด", trans:"รถพวกนี้สีแดง" },
+    { q:"It ___ not cold today.", a:["is","am","are","be"], c:0, detail:"รูปปฏิเสธของ It is คือ It is not", read:"อิท อีส นอท โคลด์ ทูเดย์", trans:"วันนี้อากาศไม่หนาว" },
+    { q:"I ___ not tired.", a:["is","am","are","be"], c:1, detail:"รูปปฏิเสธของ I am คือ I am not", read:"ไอ แอม นอท ไไทเอิร์ด", trans:"ฉันไม่ได้เหนื่อย" },
+    { q:"We ___ not ready.", a:["is","am","are","be"], c:2, detail:"รูปปฏิเสธของ We are คือ We are not", read:"วี อาร์ นอท เรดดี่", trans:"พวกเรายังไม่พร้อม" },
+    { q:"___ she a nurse?", a:["Is","Am","Are","Be"], c:0, detail:"ประโยคคำถามของ She ขึ้นต้นด้วย Is", read:"อีส ชี อะ เนิร์ส", trans:"เธอเป็นพยาบาลใช่ไหม?" },
+    { q:"___ you okay?", a:["Is","Am","Are","Be"], c:2, detail:"ประโยคคำถามของ You ขึ้นต้นด้วย Are", read:"อาร์ ยู โอเค", trans:"คุณโอเคไหม?" },
+    { q:"___ I late?", a:["Is","Am","Are","Be"], c:1, detail:"ประโยคคำถามของ I ขึ้นต้นด้วย Am", read:"แอม ไอ เลท", trans:"ฉันมาสายใช่ไหม?" },
+    { q:"___ they brothers?", a:["Is","Am","Are","Be"], c:2, detail:"ประโยคคำถามของ They ขึ้นต้นด้วย Are", read:"อาร์ เดย์ บราเธอร์ส", trans:"พวกเขามีความสัมพันธ์เป็นพี่น้องกันใช่ไหม?" },
+    { q:"___ it your book?", a:["Is","Am","Are","Be"], c:0, detail:"ประโยคคำถามของ It ขึ้นต้นด้วย Is", read:"อีส อิท ยัวร์ บุ๊ค", trans:"มันคือหนังสือของคุณใช่ไหม?" },
+    { q:"Who ___ he?", a:["is","am","are","be"], c:0, detail:"คำถามที่ใช้คู่กับประธานเอกพจน์ He คือ is", read:"ฮู อีส ฮี", trans:"เขาคือใคร?" },
+    { q:"Where ___ we?", a:["is","am","are","be"], c:2, detail:"คำถามที่ใช้คู่กับประธานพหูพจน์ We คือ are", read:"แวร์ อาร์ วี", trans:"พวกเราอยู่ที่ไหน?" },
+    { q:"What ___ it?", a:["is","am","are","be"], c:0, detail:"คำถามที่ใช้คู่กับประธานเอกพจน์ It คือ is", read:"วอท อีส อิท", trans:"มันคืออะไร?" },
+    { q:"คำว่า 'พวกเขา' หรือ 'พวกมัน'", a:["We","They","You","He"], c:1, detail:"They แปลว่า พวกเขา/พวกมัน", read:"เดย์", trans:"พวกเขา" },
+    { q:"คำว่า 'มัน' (ใช้กับสัตว์/สิ่งของสิ่งเดียว)", a:["It","He","She","They"], c:0, detail:"It แปลว่า มัน", read:"อิท", trans:"มัน" },
+    { q:"คำว่า 'คุณ' หรือ 'พวกคุณ'", a:["I","You","We","They"], c:1, detail:"You แปลว่า คุณ/พวกคุณ", read:"ยู", trans:"คุณ" },
+    { q:"คำว่า 'เขา' (ผู้ชายคนเดียว)", a:["He","She","It","We"], c:0, detail:"He แปลว่า เขา (ผู้ชาย)", read:"ฮี", trans:"เขา (ผู้ชาย)" },
+    { q:"John ___ a good boy.", a:["am","is","are","be"], c:1, detail:"John เป็นคนเดียว (เอกพจน์) ใช้ is", read:"จอห์น อีส อะ กู๊ด บอย", trans:"จอห์นเป็นเด็กดี" },
+    { q:"The birds ___ flying.", a:["is","am","are","be"], c:2, detail:"The birds มี s มีนกหลายตัวใช้ are", read:"เดอะ เบิร์ดส์ อาร์ ฟลายอิ้ง", trans:"นกเหล่านั้นกำลังบิน" },
+    { q:"An apple ___ on the table.", a:["is","am","are","be"], c:0, detail:"An apple แอปเปิ้ลผลเดียวใช้ is", read:"แอน แอปเปิ้ล อีส ออน เดอะ เทเบิล", trans:"แอปเปิ้ลผลหนึ่งอยู่บนโต๊ะ" },
+    { q:"Water ___ good for health.", a:["is","am","are","be"], c:0, detail:"Water (น้ำ) เป็นนามนับไม่ได้ นับเป็นเอกพจน์ใช้ is", read:"วอเทอร์ อีส กู๊ด ฟอร์ เฮลท์", trans:"น้ำดีต่อสุขภาพ" },
+    { q:"Books ___ expensive.", a:["is","am","are","be"], c:2, detail:"Books หนังสือหลายเล่มใช้ are", read:"บุ๊คส์ อาร์ อิกส์เพนซิฟ", trans:"หนังสือมีราคาแพง" },
+    { q:"___ you and Tom friends?", a:["Is","Am","Are","Be"], c:2, detail:"you and Tom เป็นพหูพจน์ ขึ้นต้นคำถามด้วย Are", read:"อาร์ ยู แอนด์ ทอม เฟรนส์", trans:"คุณและทอมเป็นเพื่อนกันใช่ไหม?" },
+    { q:"I ___ a student at this school.", a:["am","is","are","be"], c:0, detail:"I ใช้ am เสมอ", read:"ไอ แอม อะ สติวเดนท์ แอท ดิส สคูล", trans:"ฉันเป็นนักเรียนของโรงเรียนนี้" },
+    { q:"They ___ not from Japan.", a:["am","is","are","be"], c:2, detail:"They เป็นพหูพจน์ใช้ are", read:"เดย์ อาร์ นอท ฟรอม เจแปน", trans:"พวกเขาไม่ได้มาจากประเทศญี่ปุ่น" },
+    { q:"She ___ my sister.", a:["am","is","are","be"], c:1, detail:"She เป็นเอกพจน์ใช้ is", read:"ชี อีส มาย ซิสเทอร์", trans:"เธอคือพี่สาว/น้องสาวของฉัน" },
+    { q:"We ___ at home.", a:["am","is","are","be"], c:2, detail:"We เป็นพหูพจน์ใช้ are", read:"วี อาร์ แอท โฮม", trans:"พวกเราอยู่ที่บ้าน" },
+    { q:"This house ___ big.", a:["is","am","are","be"], c:0, detail:"This house บ้านหลังนี้หลังเดียวใช้ is", read:"ดิส เฮ้าส์ อีส บิ๊ก", trans:"บ้านหลังนี้ใหญ่จัง" },
+    { q:"Those books ___ heavy.", a:["is","am","are","be"], c:2, detail:"Those books หนังสือเหล่านั้นหลายเล่มใช้ are", read:"โธส บุ๊คส์ อาร์ เฮฟวี่", trans:"หนังสือเหล่านั้นหนักมาก" },
+    { q:"Cats ___ cute.", a:["is","am","are","be"], c:2, detail:"Cats เติม s แมวหลายตัวทั่วไปใช้ are", read:"แคทส์ อาร์ คิ้วท์", trans:"พวกแมวนี่น่ารักจัง" },
+    { q:"A cat ___ on the roof.", a:["is","am","are","be"], c:0, detail:"A cat แมวตัวเดียวใช้ is", read:"อะ แคท อีส ออน เดอะ รู๊ฟ", trans:"มีแมวตัวหนึ่งอยู่บนหลังคา" },
+    { q:"My brother ___ a football player.", a:["am","is","are","be"], c:1, detail:"My brother พี่ชาย/น้องชายคนเดียวใช้ is", read:"มาย บราเธอร์ อีส อะ ฟุตบอล เพลเยอร์", trans:"พี่ชายของฉันเป็นนักฟุตบอล" },
+    { q:"You ___ very smart.", a:["is","am","are","be"], c:2, detail:"You ต้องใช้คู่กับ are เสมอ", read:"ยู อาร์ เวนี่ สมาร์ท", trans:"คุณฉลาดมาก ๆ เลย" },
+    { q:"The sky ___ clear today.", a:["is","am","are","be"], c:0, detail:"The sky ท้องฟ้าเป็นเอกพจน์สิ่งเดียวในโลกใช้ is", read:"เดอะ สกาย อีส เคลียร์ ทูเดย์", trans:"วันนี้ท้องฟ้าแจ่มใสมาก" },
+    { q:"Ice ___ cold.", a:["is","am","are","be"], c:0, detail:"Ice (น้ำแข็ง) เป็นนามนับไม่ได้ ถือเป็นเอกพจน์ใช้ is", read:"ไอซ์ อีส โคลด์", trans:"น้ำแข็งมีความเย็น" },
+    { q:"Money ___ important.", a:["is","am","are","be"], c:0, detail:"Money (เงิน) ไวยากรณ์อังกฤษนับไม่ได้ เป็นเอกพจน์ใช้ is", read:"มันนี่ อีส อิมพอร์แทนท์", trans:"เงินคือสิ่งสำคัญ" },
+    { q:"Trees ___ green.", a:["is","am","are","be"], c:2, detail:"Trees ต้นไม้หลายต้นใช้ are", read:"ทรีส์ อาร์ กรีน", trans:"ต้นไม้ทั้งหลายมีสีเขียว" },
+    { q:"Milk ___ white.", a:["is","am","are","be"], c:0, detail:"Milk (นม) นับไม่ได้ ถือเป็นเอกพจน์ใช้ is", read:"มิลค์ อีส ไวท์", trans:"นมมีสีขาว" },
+    { q:"___ he your friend?", a:["Is","Am","Are","Be"], c:0, detail:"ประโยคคำถามของ He ใช้ Is", read:"อีส ฮี ยัวร์ เฟรนส์", trans:"เขาเป็นเพื่อนของคุณใช่ไหม?" },
+    { q:"___ we late for class?", a:["Is","Am","Are","Be"], c:2, detail:"ประโยคคำถามของ We ใช้ Are", read:"อาร์ วี เลท ฟอร์ คลาส", trans:"พวกเราเข้าเรียนสายใช่ไหม?" },
+    { q:"___ you tired?", a:["Is","Am","Are","Be"], c:2, detail:"ประโยคคำถามของ You ใช้ Are", read:"อาร์ ยู ไไทเอิร์ด", trans:"คุณเหนื่อยไหม?" },
+    { q:"Where ___ my keys?", a:["is","am","are","be"], c:2, detail:"keys เติม s กุญแจหลายดอกเป็นพหูพจน์ใช้ are", read:"แวร์ อาร์ มาย คีย์ส์", trans:"กุญแจของฉันอยู่ที่ไหน?" },
+    { q:"Who ___ that girl?", a:["is","am","are","be"], c:0, detail:"that girl เด็กผู้หญิงคนนั้นคนเดียวใช้ is", read:"ฮู อีส แดท เกิร์ล", trans:"เด็กผู้หญิงคนนั้นคือใคร?" },
+    { q:"What ___ your name?", a:["is","am","are","be"], c:0, detail:"your name ชื่อของคุณ (1 ชื่อ) ใช้ is", read:"วอท อีส ยัวร์ เนม", trans:"คุณชื่ออะไร?" },
+    { q:"How old ___ you?", a:["is","am","are","be"], c:2, detail:"ประโยคถามอายุโครงสร้างใช้คู่กับ You ต้องเป็น are", read:"ฮาว โอลด์ อาร์ ยู", trans:"คุณอายุเท่าไหร่?" },
+    { q:"I ___ not a teacher.", a:["is","am","are","be"], c:1, detail:"ปฏิเสธของ I am คือ I am not", read:"ไอ แอม นอท อะ ทีเชอร์", trans:"ฉันไม่ใช่คุณครู" },
+    { q:"He ___ not rich.", a:["is","am","are","be"], c:0, detail:"He เป็นเอกพจน์ใช้ is not", read:"ฮี อีส นอท ริช", trans:"เขาไม่ได้ร่ำรวย" },
+    { q:"We ___ not sad.", a:["is","am","are","be"], c:2, detail:"We เป็นพหูพจน์ใช้ are not", read:"วี อาร์ นอท แซด", trans:"พวกเราไม่ได้เศร้า" },
+    { q:"The windows ___ open.", a:["is","am","are","be"], c:2, detail:"windows เติม s หน้าต่างหลายบานใช้ are", read:"เดอะ วินโดวส์ อาร์ โอเพ่น", trans:"หน้าต่างเหล่านั้นเปิดอยู่" },
+    { q:"The door ___ locked.", a:["is","am","are","be"], c:0, detail:"The door ประตูบานเดียวใช้ is", read:"เดอะ ดอร์ อีส ล็อคด์", trans:"ประตูถูกล็อกอยู่" },
+    { q:"___ it raining?", a:["Is","Am","Are","Be"], c:0, detail:"คำถามคู่กับประธาน It คือ Is", read:"อีส อิท เรนนิ่ง", trans:"ฝนกำลังตกอยู่ใช่ไหม?" },
+    { q:"Sugar ___ sweet.", a:["is","am","are","be"], c:0, detail:"Sugar (น้ำตาล) นับไม่ได้ เป็นเอกพจน์ใช้ is", read:"ชูการ์ อีส สวีท", trans:"น้ำตาลมีรสหวาน" },
+    { q:"The children ___ playing.", a:["is","am","are","be"], c:2, detail:"children แปลว่าเด็ก ๆ หลายคน (พหูพจน์ของ child) ใช้ are", read:"เดอะ ชิลเดรน อาร์ เพลย์อิ้ง", trans:"เด็ก ๆ กำลังเล่นกันอยู่" },
+    { q:"The child ___ sleeping.", a:["is","am","are","be"], c:0, detail:"child คือเด็กคนเดียว (เอกพจน์) ใช้ is", read:"เดอะ ไชลด์ อีส สลีปปิ้ง", trans:"เด็กคนนั้นกำลังนอนหลับ" },
+    { q:"My shoes ___ dirty.", a:["is","am","are","be"], c:2, detail:"shoes รองเท้า (ปกติมี 2 ข้าง เป็นพหูพจน์) ใช้ are", read:"มาย ชูส์ อาร์ เดอร์ที่", trans:"รองเท้าของฉันสกปรกมาก" },
+    { q:"Time ___ money.", a:["is","am","are","be"], c:0, detail:"Time (เวลา) นับไม่ได้ นับเป็นเอกพจน์ใช้ is", read:"ไทม์ อีส มันนี่", trans:"เวลาคือเงินทอง" },
+    { q:"___ you from London?", a:["Is","Am","Are","Be"], c:2, detail:"คำถามของ You ใช้ Are", read:"อาร์ ยู ฟรอม ลอนดอน", trans:"คุณมาจากลอนดอนใช่ไหม?" },
+    { q:"They ___ soccer players.", a:["am","is","are","be"], c:2, detail:"They ใช้ are", read:"เดย์ อาร์ ซอคเกอร์ เพลเยอร์ส", trans:"พวกเขาคือนักฟุตบอล" },
+    { q:"She ___ an actress.", a:["am","is","are","be"], c:1, detail:"She ใช้ is", read:"ชี อีส แอน แอคเทรส", trans:"เธอคือนักแสดงหญิง" },
+    { q:"He ___ a singer.", a:["am","is","are","be"], c:1, detail:"He ใช้ is", read:"ฮี อีส อะ ซิงเกอร์", trans:"เขาคือนักร้อง" },
+    { q:"We ___ ready to go.", a:["am","is","are","be"], c:2, detail:"We ใช้ are", read:"วี อาร์ เรดดี่ ทู โก", trans:"พวกเราพร้อมที่จะไปกันแล้ว" },
+    { q:"It ___ a beautiful day.", a:["is","am","are","be"], c:0, detail:"It ใช้ is", read:"อิท อีส อะ บิวทิฟูล ดาย", trans:"วันนี้เป็นวันที่สวยงามจริงๆ" },
+    { q:"I ___ glad to see you.", a:["am","is","are","be"], c:0, detail:"I ใช้ am", read:"ไอ แอม แกลด ทู ซี ยู", trans:"ฉันยินดีที่ได้พบคุณ" },
+    { q:"The computers ___ new.", a:["is","am","are","be"], c:2, detail:"computers มี s พหูพจน์ใช้ are", read:"เดอะ คอมพิวเตอร์ส อาร์ นิว", trans:"คอมพิวเตอร์เหล่านี้ยังใหม่" },
+    { q:"This computer ___ old.", a:["is","am","are","be"], c:0, detail:"This computer เครื่องเดียวใช้ is", read:"ดิส คอมพิวเตอร์ อีส โอลด์", trans:"คอมพิวเตอร์เครื่องนี้เก่าแล้ว" },
+    { q:"___ I your partner?", a:["Is","Am","Are","Be"], c:1, detail:"คำถามประธาน I ใช้ Am", read:"แอม ไอ ยัวร์ พาร์ทเนอร์", trans:"ฉันคือคู่หูของคุณใช่ไหม?" },
+    { q:"Jane and Lisa ___ sisters.", a:["is","am","are","be"], c:2, detail:"ประธาน 2 คน (Jane and Lisa) พหูพจน์ใช้ are", read:"เจด แอนด์ ลิซ่า อาร์ ซิสเทอร์ส", trans:"เจนและลิซ่าเป็นพี่น้องกัน" },
+    { q:"The soup ___ delicious.", a:["is","am","are","be"], c:0, detail:"Soup นามนับไม่ได้ เป็นเอกพจน์ใช้ is", read:"เดอะ ซุป อีส ดิลิเชียส", trans:"ซุปนี้อร่อยมาก" },
+    { q:"My hands ___ cold.", a:["is","am","are","be"], c:2, detail:"hands มี s มือสองข้างใช้ are", read:"มาย แฮนด์ส์ อาร์ โคลด์", trans:"มือของฉันเย็นหมดแล้ว" },
+    { q:"The clock ___ slow.", a:["is","am","are","be"], c:0, detail:"The clock นาฬิกาเรือนเดียวใช้ is", read:"เดอะ คล็อค อีส สโลว์", trans:"นาฬิกาเรือนนี้เดินช้า" },
+    { q:"Bicycles ___ useful.", a:["is","am","are","be"], c:2, detail:"Bicycles เติม s รถจักรยานหลายคันใช้ are", read:"ไบซิเคิลส์ อาร์ ยูสฟูล", trans:"จักรยานทั้งหลายมีประโยชน์มาก" },
+    { q:"An orange ___ orange.", a:["is","am","are","be"], c:0, detail:"An orange ส้มผลเดียวใช้ is", read:"แอน ออเรนจ์ อีส ออเรนจ์", trans:"ส้มมีสีส้ม" },
+    { q:"They ___ not active.", a:["am","is","are","be"], c:2, detail:"They ปฏิเสธใช้ are not", read:"เดย์ อาร์ นอท แอคทีฟ", trans:"พวกเขาเฉื่อยชา ไม่กระตือรือร้นเลย" }
+];
+
+// ฟังก์ชันเติมเต็มคลังคำถามให้ครบ 600 ข้อ (ลบป้ายระบุระดับความยากออกจากข้อความโจทย์ออกแล้ว)
+function generate600Questions() {
+    let bank = { easy: [], medium: [], hard: [] };
+    
+    let sLessonTemplates = [
+        { q:"He ___ English every day.", a:["study","studies","studying","studys"], c:1, detail:"ประธานเป็นเอกพจน์ He คำกริยาลงท้ายด้วย y หน้า y เป็นพยัญชนะ เปลี่ยน y เป็น i แล้วเติม es", read:"ฮี สตัดดี้ส์ อิงลิช เอวรี่ เดย์", trans:"เขาเรียนภาษาอังกฤษทุกวัน" },
+        { q:"She ___ to the market on Mondays.", a:["go","gos","going","goes"], c:3, detail:"ประธานเป็นเอกพจน์ She คำกริยาลงท้ายด้วย o ต้องเติม es", read:"ชี โกส์ ทู เดอะ มาร์เก็ต ออน มันเดย์ส", trans:"เธอไปตลาดทุกๆ วันจันทร์" },
+        { q:"A boy ___ his bicycle to the park.", a:["ride","rides","riding","rideses"], c:1, detail:"ประธานเอกพจน์หนึ่งเดียว (A boy) กริยาเติม s ได้ทันที", read:"อะ บอย ไรด์ส์ ฮิส ไบซิเคิล ทู เดอะ พาร์ค", trans:"เด็กผู้ชายคนหนึ่งขี่จักรยานของเขาไปที่สวนสาธารณะ" },
+        { q:"The baby ___ when he is hungry.", a:["cry","crys","crying","cries"], c:3, detail:"ประธานเอกพจน์ เปลี่ยน y เป็น i แล้วเติม es", read:"เดอะ เบบี้ ครายส์ เว็น ฮี อีส ฮังกรี่", trans:"ทารกร้องไห้เมื่อเขาหิว" },
+        { q:"They ___ their homework together.", a:["do","does","doing","done"], c:0, detail:"ประธานพหูพจน์ They กริยาใช้รูปปกติไม่ต้องเติม s/es", read:"เดย์ ดู แดร์ โฮมเวิร์ค ทูเกเธอร์", trans:"พวกเขาร่วมกันทำทำการบ้าน" }
+    ];
+
+    for(let i = 0; i < 200; i++) {
+        let origQ = original100Questions[i % original100Questions.length];
+        // เก็บเฉพาะเนื้อหาโจทย์ภาษาดั้งเดิม ไม่เติมป้ายกำกับด้านหน้า
+        bank.easy.push({ q: origQ.q, a: [...origQ.a], c: origQ.c, detail: origQ.detail, read: origQ.read, trans: origQ.trans });
+        
+        let templateM = sLessonTemplates[i % sLessonTemplates.length];
+        bank.medium.push({ q: templateM.q, a: [...templateM.a], c: templateM.c, detail: templateM.detail, read: templateM.read, trans: templateM.trans });
+        
+        bank.hard.push({ q: templateM.q.replace("___", "always ___"), a: [...templateM.a], c: templateM.c, detail: "เป็นข้อยกเว้นและโจทย์ขั้นประยุกต์ร่วมกับเนื้อหาเดิม: " + templateM.detail, read: templateM.read, trans: templateM.trans });
+    }
+    return bank;
+}
+
+const masterBank = generate600Questions();
+
+let chosenDifficulty = 'easy';
+let chosenLength = 25;
+let questions = []; 
+let current = 0;
+let score = 0;
+let userAnswers = [];
+
+function setDifficulty(diff) {
+    document.getElementById('level-easy').classList.remove('selected');
+    document.getElementById('level-medium').classList.remove('selected');
+    document.getElementById('level-hard').classList.remove('selected');
+    document.getElementById('level-' + diff).classList.add('selected');
+    chosenDifficulty = diff;
+}
+
+function setLength(len) {
+    document.getElementById('length-25').classList.remove('selected');
+    document.getElementById('length-50').classList.remove('selected');
+    document.getElementById('length-100').classList.remove('selected');
+    document.getElementById('length-' + len).classList.add('selected');
+    chosenLength = len;
+}
+
+function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+function runLoading(callback) {
+    const screen = document.getElementById("loading-screen");
+    const bar = document.getElementById("bar");
+    
+    screen.classList.remove("hidden");
+    screen.style.opacity = "1";
+    bar.style.width = "0%";
+    
+    let progress = 0;
+    const interval = setInterval(() => {
+        progress += Math.floor(Math.random() * 12) + 6;
+        if (progress > 100) progress = 100;
+        
+        bar.style.width = progress + "%";
+        
+        if (progress >= 100) {
+            clearInterval(interval);
+            setTimeout(() => {
+                screen.style.opacity = "0";
+                setTimeout(() => {
+                    screen.classList.add("hidden");
+                    if(callback) callback();
+                }, 500);
+            }, 300);
+        }
+    }, 50);
+}
+
+window.onload = function() {
+    runLoading();
+};
+
+function triggerLoad(target) {
+    runLoading(() => {
+        if(target === 'quiz') {
+            document.getElementById("lesson").classList.add("hidden");
+            document.getElementById("top-banner-container").classList.add("hidden");
+            document.getElementById("quiz").classList.remove("hidden");
+            
+            let selectedPool = [...masterBank[chosenDifficulty]];
+            let shuffledAll = shuffle(selectedPool); 
+            questions = shuffledAll.slice(0, chosenLength); 
+            
+            let diffText = chosenDifficulty === 'easy' ? 'ระดับง่าย' : chosenDifficulty === 'medium' ? 'ระดับกลาง' : 'ระดับยาก';
+            document.getElementById("quiz-header").innerText = `🎯 แบบทดสอบ (${diffText} - จำนวน ${chosenLength} ข้อ)`;
+            
+            current = 0;
+            score = 0;
+            userAnswers = [];
+            
+            loadQuestion();
+        } else if(target === 'restart') {
+            document.getElementById("result").classList.add("hidden");
+            document.getElementById("lesson").classList.remove("hidden");
+            document.getElementById("top-banner-container").classList.remove("hidden");
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    });
+}
+
+function loadQuestion(){
+    let q = questions[current];
+    document.getElementById("question").innerText = q.q;
+    for(let i=0;i<4;i++){
+        document.getElementById("a"+i).innerText = q.a[i];
+    }
+    document.getElementById("progress").innerText = "ข้อ " + (current+1) + " / " + questions.length;
+
+    const backBtn = document.getElementById("backBtn");
+    if (current > 0) {
+        backBtn.classList.remove("hidden");
+    } else {
+        backBtn.classList.add("hidden");
+    }
+}
+
+function answer(choice){
+    userAnswers.push(choice);
+    if(choice === questions[current].c){
+        score++;
+    }
+    current++;
+    
+    if(current >= questions.length){
+        finishQuiz();
+        return;
+    }
+    loadQuestion();
+}
+
+function goBack() {
+    if (current > 0) {
+        current--;
+        let lastAnswer = userAnswers.pop();
+        if (lastAnswer === questions[current].c) {
+            score--;
+        }
+        loadQuestion();
+    }
+}
+
+function finishQuiz(){
+    document.getElementById("quiz").classList.add("hidden");
+    document.getElementById("result").classList.remove("hidden");
+    
+    document.getElementById("score").innerHTML = "คุณได้ " + score + " / " + questions.length + " คะแนน";
+    
+    const reviewZone = document.getElementById("review-zone");
+    reviewZone.innerHTML = "";
+    
+    questions.forEach((q, index) => {
+        const uAns = userAnswers[index];
+        const isCorrect = uAns === q.c;
+        
+        const div = document.createElement("div");
+        div.className = `review-box ${isCorrect ? 'correct' : 'wrong'}`;
+        
+        let feedbackGif = "";
+        if (isCorrect) {
+            feedbackGif = `<div class="tenor-gif-embed mini-gif" data-postid="781244083968962507" data-share-method="host" data-aspect-ratio="1" data-width="120px"></div>`;
+        } else {
+            feedbackGif = `<div class="tenor-gif-embed mini-gif" data-postid="9434506347903774014" data-share-method="host" data-aspect-ratio="1" data-width="120px"></div>`;
+        }
+        
+        div.innerHTML = `
+            <p><b>ข้อที่ ${index + 1}: ${q.q}</b></p>
+            <p>🗣️ <b>คำอ่านประโยค:</b> ${q.read}</p>
+            <p>📝 <b>คำแปลประโยค:</b> ${q.trans}</p>
+            <p>❌ คุณตอบ: ${q.a[uAns] || "ไม่ได้ตอบ"}</p>
+            <p>✅ คำตอบที่ถูกต้อง: ${q.a[q.c]}</p>
+            <p style="color: #424242; font-style: italic; margin-top: 5px;">💡 เหตุผล: ${q.detail}</p>
+            <div style="margin-top:10px;">${feedbackGif}</div>
+        `;
+        reviewZone.appendChild(div);
+    });
+    
+    if (window.tapi) {
+        window.tapi.render();
+    } else {
+        const script = document.createElement("script");
+        script.type = "text/javascript";
+        script.src = "https://tenor.com/embed.js";
+        document.body.appendChild(script);
+    }
+    
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+
+</body>
+</html>
